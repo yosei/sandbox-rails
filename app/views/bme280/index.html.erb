@@ -1,0 +1,44 @@
+<h1><%= @id %></h1>
+<p><%= @count %> rows in the result. <%= link_to 'Raw CSV', bme280_path(@id,format: :csv) %></p>
+<div id="chart"></div>
+<script>
+$(function () {
+    $('#chart').highcharts({
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: 'Monthly Average Temperature'
+        },
+        subtitle: {
+            text: 'Source: WorldClimate.com'
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+        yAxis: {
+            title: {
+                text: 'Temperature (°C)'
+            }
+        },
+        plotOptions: {
+            line: {
+                dataLabels: {
+                    enabled: true
+                },
+                enableMouseTracking: false
+            }
+        },
+        series: [{
+            name: '気温',
+            data: <%= @temperatures.to_s %>
+        }, {
+            name: '湿度',
+            data: <%= @humidities.to_s %>
+        }, {
+            name: '気圧',
+            data: <%= @pressures.to_s %>
+        }]
+    });
+});
+</script>
