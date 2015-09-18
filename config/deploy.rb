@@ -2,7 +2,7 @@
 lock '3.4.0'
 
 set :application, 'sandbox-rails'
-set :repo_url, ''
+set :repo_url, 'https://github.com/yosei/sandbox-rails.git'
 
 ask :user, `whoami`.chomp
 

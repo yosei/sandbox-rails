@@ -50,5 +50,5 @@ test:
 production:
   <<: *default
   database: sandbox-rails_production
-  username: sandbox-rails
-  password: <%= ENV['SANDBOX-RAILS_DATABASE_PASSWORD'] %>
+  #username: sandbox-rails
+  #password: <%= ENV['SANDBOX-RAILS_DATABASE_PASSWORD'] %>
