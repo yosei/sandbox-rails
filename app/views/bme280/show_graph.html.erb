@@ -1,0 +1,85 @@
+<h1>raspi_id = <%= @id %></h1>
+<table class="table">
+  <tr>
+    <th>件数</th>
+    <td><%= @count %></td>
+    <th>保存期間</th>
+    <td><%= @min %> to <%= @max %></td>
+  </tr>
+</table>
+<p><%= link_to 'Download CSV', bme280_raw_path(@id,format: :csv), class: "btn btn-default" %></p>
+<div id="chart_t"></div>
+<div id="chart_h"></div>
+<div id="chart_p"></div>
+<script>
+    $('#chart_t').highcharts({
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: '最新の記録',
+        },
+        subtitle: {
+            text: 'Captured by BOSCH BME280'
+        },
+        xAxis: {
+            type: 'datetime'
+        },
+        yAxis: {
+            title: {
+                text: '気温 (°C)'
+            }
+        },
+        series: [{
+            name: "気温",
+            color: Highcharts.getOptions().colors[3],
+            showInLegend: false,
+            data: <%= @temperatures.to_s %>
+        }]
+    });
+    $('#chart_h').highcharts({
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: '',
+        },
+        xAxis: {
+            type: 'datetime'
+        },
+        yAxis: {
+            title: {
+                text: '湿度 (%)'
+            }
+        },
+        series: [{
+            name: '湿度',
+            color: Highcharts.getOptions().colors[0],
+            showInLegend: false,
+            data: <%= @humidities.to_s %>
+        }]
+    });
+    $('#chart_p').highcharts({
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: '',
+        },
+        xAxis: {
+            type: 'datetime'
+        },
+        yAxis: {
+            title: {
+                text: '気圧 (%)'
+            }
+        },
+        series: [{
+            name: '気圧',
+            color: Highcharts.getOptions().colors[2],
+            showInLegend: false,
+            data: <%= @pressures.to_s %>
+        }]
+    });
+
+</script>

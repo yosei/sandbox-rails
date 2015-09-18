@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  get 'bme280/:id' => 'bme280#index', as: :bme280
+  get 'bme280/:id' => 'bme280#show_graph', as: :bme280
+  get 'bme280/raw/:id' => 'bme280#show_raw', as: :bme280_raw
   get 'pages/root'
 
   root 'pages#root'
