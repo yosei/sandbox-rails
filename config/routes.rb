@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
   get 'bme280/:id' => 'bme280#show_graph', as: :bme280
   get 'bme280/raw/:id' => 'bme280#show_raw', as: :bme280_raw
-  get 'pages/root'
 
+  get 'webcam/:id' => 'webcam#show_images', as: :webcam
+
+  get 'pages/root'
   root 'pages#root'
 
   # Example resource route (maps HTTP verbs to controller actions automatically):

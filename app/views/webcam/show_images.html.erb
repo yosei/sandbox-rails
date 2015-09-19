@@ -1,0 +1,10 @@
+<% content_for :title do %>Kunimigaoka<% end %>
+<p><%= @files.count %> files.</p>
+<div class="row">
+<% @files.reverse.each do |f| %>
+  <div class="col-md-4">
+  <%= image_tag "/webcamlogs/"+f,class: "img-responsive img-rounded" %>
+  <small><%= f %></small>
+  </div>
+<% end %>
+</div>
