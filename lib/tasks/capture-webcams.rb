@@ -16,8 +16,8 @@ end
 # http://ssbu-t.psn-web.net/Japanese/netwkcam/technic/ntwrkcam_cgi_intrfs1_v23.pdf
 
 # Crontab
-# */15 5-8 * * * ./bin/capture-webcams.rb
+# */15 5-8 * * * /usr/local/bin/ruby ./bin/capture-webcams.rb
 
 
 # Schema
-# CREATE TABLE
+# CREATE TABLE webcam_logs ()
