@@ -8,19 +8,21 @@
   </tr>
 </table>
 <p><%= link_to 'Download CSV', bme280_raw_path(@id,format: :csv), class: "btn btn-default" %></p>
-<div id="chart_t"></div>
-<div id="chart_h"></div>
-<div id="chart_p"></div>
+<div class="row">
+<div id="chart_t" class="col-md-4"></div>
+<div id="chart_h" class="col-md-4"></div>
+<div id="chart_p" class="col-md-4"></div>
+<div>
+<div class="row">
+  <div id="chart_dt" class="col-md-12"></div>
+<div>
 <script>
     $('#chart_t').highcharts({
         chart: {
             type: 'line'
         },
         title: {
-            text: '最新の記録',
-        },
-        subtitle: {
-            text: 'Captured by BOSCH BME280'
+            text: '',
         },
         xAxis: {
             type: 'datetime'
@@ -81,5 +83,26 @@
             data: <%= @pressures.to_s %>
         }]
     });
-
+    $('#chart_dt').highcharts({
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: '',
+        },
+        xAxis: {
+            type: 'datetime'
+        },
+        yAxis: {
+            title: {
+                text: '気温 (°C)'
+            }
+        },
+        series: [{
+            name: "気温",
+            color: Highcharts.getOptions().colors[3],
+            showInLegend: false,
+            data: <%= @temperatures_dailies.to_s %>
+        }]
+    });
 </script>

@@ -27,6 +27,17 @@ class Bme280Controller < ApplicationController
       @humidities += [row["humidity"]]
       @pressures += [row["pressure"]]
     end
+    # Get daily records.
+    @temperatures_dailies = []
+    @humidities_dailies = []
+    @pressures_dailies = []
+    sql = "SELECT * FROM logs_dailies WHERE raspi_id = #{id} ORDER BY ts"
+    results = db.query(sql)
+    results.each do |row|
+      @temperatures_dailies += [row["temperature"]]
+      @humidities_dailies += [row["humidity"]]
+      @pressures_dailies += [row["pressure"]]
+    end
     @id = id
   end
 
