@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   get 'bme280/raw/:id' => 'bme280#show_raw', as: :bme280_raw
 
   get 'webcam/:id' => 'webcam#show_images', as: :webcam
+  get 'webcam/:id/:date' => 'webcam#show_images_day', as: :webcam_day
 
   get 'pages/root'
   root 'pages#root'
