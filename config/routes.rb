@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get 'bme280/:id' => 'bme280#show_graph', as: :bme280
+  get 'bme280/data/:id' => 'bme280#show_graph_data', as: :bme280_data
   get 'bme280/raw/:id' => 'bme280#show_raw', as: :bme280_raw
 
   get 'webcam/:id' => 'webcam#show_images', as: :webcam

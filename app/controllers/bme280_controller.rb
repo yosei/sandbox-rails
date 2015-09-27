@@ -13,32 +13,44 @@ class Bme280Controller < ApplicationController
     results = db.query(sql)
     results.each do |row|
       @count = row["c"]
-      @min = row["mi"]
-      @max = row["ma"]
+      @min = row["mi"].strftime("%F")
+      @max = row["ma"].strftime("%F %T")
+      @days = ((row["ma"] -  row["mi"]) / 64800).floor
     end
-    # Get latest records.
-    @temperatures = []
-    @humidities = []
-    @pressures = []
-    sql = "SELECT * FROM logs WHERE raspi_id = #{id} AND ts BETWEEN '#{st}' AND '#{en}' ORDER BY ts"
-    results = db.query(sql)
-    results.each do |row|
-      @temperatures += [row["temperature"]]
-      @humidities += [row["humidity"]]
-      @pressures += [row["pressure"]]
-    end
-    # Get daily records.
-    @temperatures_dailies = []
-    @humidities_dailies = []
-    @pressures_dailies = []
-    sql = "SELECT * FROM logs_dailies WHERE raspi_id = #{id} ORDER BY ts"
-    results = db.query(sql)
-    results.each do |row|
-      @temperatures_dailies += [row["temperature"]]
-      @humidities_dailies += [row["humidity"]]
-      @pressures_dailies += [row["pressure"]]
-    end
+    st,en = get_span
+    @span = "from "+st+" to "+en
     @id = id
+
+    # Taking over parameter to show_graph_data action.
+    @p = {id: params[:id], day_offset: params[:day_offset]}
+    @p = @p.to_json.html_safe
+  end
+
+  def show_graph_data
+    id = params[:id]
+    src = params[:src] || "temperature"
+    unit = params[:unit] || "10min"
+    db = connect_bme280
+    @data = []
+    if unit == "day" # 1day
+      sql = "SELECT ts,#{src} FROM logs_dailies WHERE raspi_id = #{id} ORDER BY ts"
+      results = db.query(sql)
+      results.each do |row|
+        @data += [[row["ts"].to_time.to_i * 1000,row[src]]]
+      end
+    else # 10min
+      st,en = get_span
+      sql = "SELECT ts,#{src} FROM logs WHERE raspi_id = #{id} AND ts BETWEEN '#{st}' AND '#{en}' ORDER BY ts"
+      db = connect_bme280
+      results = db.query(sql)
+      results.each do |row|
+        # @data += [["Date.parse('"+row["ts"].to_s+"')",row[src]]]
+        @data += [[row["ts"].to_i * 1000,row[src]]]
+      end
+    end
+    respond_to do |format|
+      format.json { render json: @data }
+    end
   end
 
   def show_raw
@@ -62,5 +74,12 @@ class Bme280Controller < ApplicationController
   private
     def connect_bme280
       client = Mysql2::Client.new(host:"localhost",username:"root",database:"bme280")
+    end
+
+    def get_span
+      day_offset = (params[:day_offset] || "0").to_i
+      st = (DateTime.now - (day_offset + 1).days).strftime("%F %T")
+      en = (DateTime.now - day_offset.days).strftime("%F %T")
+      return [st, en]
     end
 end
