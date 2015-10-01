@@ -73,7 +73,7 @@ class Bme280Controller < ApplicationController
 
   private
     def connect_bme280
-      client = Mysql2::Client.new(host:"localhost",username:"root",database:"bme280")
+      client = Mysql2::Client.new(host:"localhost",username:"root",database:"sandbox-rails_"+Rails.env)
     end
 
     def get_span
