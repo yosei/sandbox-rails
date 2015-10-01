@@ -32,7 +32,7 @@ def parsefile(f)
     press = row[1]
     humid = row[2]
     ts = to_jst(row[3])
-    sql = "INSERT IGNORE INTO logs"
+    sql = "INSERT IGNORE INTO bme280_logs"
     sql += " (raspi_id,ts,temperature,pressure,humidity)"
     sql += " VALUES (0,'#{ts}',#{temp},#{press},#{humid})"
     @client.query(sql)
@@ -62,16 +62,16 @@ else
 end
 
 daily_sql = <<EOT
-INSERT IGNORE INTO logs_dailies SELECT raspi_id,date(ts),count(1),
+INSERT IGNORE INTO bme280_logs_dailies SELECT raspi_id,date(ts),count(1),
 avg(temperature),min(temperature),max(temperature),
 avg(pressure),min(pressure),max(pressure),
 avg(humidity),min(humidity),max(humidity),now()
-FROM logs GROUP BY raspi_id,date(ts);
+FROM bme280_logs GROUP BY raspi_id,date(ts);
 EOT
 
 @client.query(daily_sql)
 
-results = @client.query("SELECT max(ts) AS ts FROM logs")
+results = @client.query("SELECT max(ts) AS ts FROM bme280_logs")
 results.each do |row|
   puts "Latest timestamp: %s" % [row["ts"]]
 end
