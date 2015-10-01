@@ -9,7 +9,7 @@ class Bme280Controller < ApplicationController
     st = (DateTime.now - 1.days).strftime("%F %T")
     en = DateTime.now.strftime("%F %T")
     # Get stat.
-    sql = "SELECT count(1) AS c,min(ts) AS mi,max(ts) AS ma FROM logs WHERE raspi_id = #{id}"
+    sql = "SELECT count(1) AS c,min(ts) AS mi,max(ts) AS ma FROM bme280_logs WHERE raspi_id = #{id}"
     results = db.query(sql)
     results.each do |row|
       @count = row["c"]
@@ -33,14 +33,14 @@ class Bme280Controller < ApplicationController
     db = connect_bme280
     @data = []
     if unit == "day" # 1day
-      sql = "SELECT ts,#{src} FROM logs_dailies WHERE raspi_id = #{id} ORDER BY ts"
+      sql = "SELECT ts,#{src} FROM bme280_logs_dailies WHERE raspi_id = #{id} ORDER BY ts"
       results = db.query(sql)
       results.each do |row|
         @data += [[row["ts"].to_time.to_i * 1000,row[src]]]
       end
     else # 10min
       st,en = get_span
-      sql = "SELECT ts,#{src} FROM logs WHERE raspi_id = #{id} AND ts BETWEEN '#{st}' AND '#{en}' ORDER BY ts"
+      sql = "SELECT ts,#{src} FROM bme280_logs WHERE raspi_id = #{id} AND ts BETWEEN '#{st}' AND '#{en}' ORDER BY ts"
       db = connect_bme280
       results = db.query(sql)
       results.each do |row|
@@ -58,7 +58,7 @@ class Bme280Controller < ApplicationController
     db = connect_bme280
     st = (DateTime.now - 30.days).strftime("%F %T")
     en = DateTime.now.strftime("%F %T")
-    sql = "SELECT * FROM logs WHERE raspi_id = #{id} AND ts BETWEEN '#{st}' AND '#{en}' ORDER BY ts"
+    sql = "SELECT * FROM bme280_logs WHERE raspi_id = #{id} AND ts BETWEEN '#{st}' AND '#{en}' ORDER BY ts"
     @results = db.query(sql)
     respond_to do |format|
       format.html
