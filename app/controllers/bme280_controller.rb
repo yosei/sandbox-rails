@@ -31,21 +31,26 @@ class Bme280Controller < ApplicationController
     src = params[:src] || "temperature"
     unit = params[:unit] || "10min"
     db = connect_bme280
-    @data = []
     if unit == "day" # 1day
-      sql = "SELECT ts,#{src} FROM bme280_logs_dailies WHERE raspi_id = #{id} ORDER BY ts"
+      @data = {avg: [], max: [], min: [], diff: []}
+      sql = "SELECT ts,#{src}_avg,#{src}_max,#{src}_min FROM bme280_logs_dailies WHERE raspi_id = #{id} ORDER BY ts"
       results = db.query(sql)
       results.each do |row|
-        @data += [[row["ts"].to_time.to_i * 1000,row[src]]]
+        ts = (row["ts"].to_time.to_i + 9 * 60 * 60) * 1000
+        @data[:avg] += [[ts,row[src+"_avg"]]]
+        @data[:max] += [[ts,row[src+"_max"]]]
+        @data[:min] += [[ts,row[src+"_min"]]]
+        @data[:diff] += [[ts,row[src+"_max"] - row[src+"_min"]]]
       end
     else # 10min
+      @data = []
       st,en = get_span
       sql = "SELECT ts,#{src} FROM bme280_logs WHERE raspi_id = #{id} AND ts BETWEEN '#{st}' AND '#{en}' ORDER BY ts"
       db = connect_bme280
       results = db.query(sql)
       results.each do |row|
         # @data += [["Date.parse('"+row["ts"].to_s+"')",row[src]]]
-        @data += [[row["ts"].to_i * 1000,row[src]]]
+        @data += [[(row["ts"].to_i + 9 * 60 * 60) * 1000,row[src]]]
       end
     end
     respond_to do |format|
