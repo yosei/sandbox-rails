@@ -8,6 +8,7 @@ DIR = '/opt/bme280logs'
 
 opt = OptionParser.new
 opt.on('--all') { |v| OPTS[:all] = true }
+opt.on('--daily') { |v| OPTS[:daily] = true }
 opt.on('-e env') { |v| OPTS[:e] = v }
 
 OPTS = {}
@@ -49,18 +50,6 @@ Dir.entries(DIR).sort.each do |f|
   files += [f]
 end
 
-if OPTS[:all]
-  n_rows = 0
-  n_files = 0
-  files.each do |f|
-    n_rows += parsefile(DIR+"/"+f)
-    n_files += 1
-  end
-  puts "%d files scanned, %d rows added." % [n_files,n_rows]
-else
-  n_rows = parsefile(DIR+"/"+files[-1])
-end
-
 daily_sql = <<EOT
 INSERT IGNORE INTO bme280_logs_dailies SELECT raspi_id,date(ts),count(1),
 avg(temperature),min(temperature),max(temperature),
@@ -69,7 +58,22 @@ avg(humidity),min(humidity),max(humidity),now()
 FROM bme280_logs GROUP BY raspi_id,date(ts);
 EOT
 
-@client.query(daily_sql)
+if OPTS[:all]
+  n_rows = 0
+  n_files = 0
+  files.each do |f|
+    n_rows += parsefile(DIR+"/"+f)
+    n_files += 1
+  end
+  puts "%d files scanned, %d rows added." % [n_files,n_rows]
+elsif OPTS[:daily]
+  # Expected to run the first of the day.
+  n_rows = parsefile(DIR+"/"+files[-2])
+  @client.query(daily_sql)
+else
+  n_rows = parsefile(DIR+"/"+files[-1])
+end
+
 
 results = @client.query("SELECT max(ts) AS ts FROM bme280_logs")
 results.each do |row|
