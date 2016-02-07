@@ -11,12 +11,12 @@ class Bme280Controller < ApplicationController
     # Get stat.
     sql = "SELECT count(1) AS c,min(ts) AS mi,max(ts) AS ma FROM bme280_logs WHERE raspi_id = #{id}"
     results = db.query(sql)
-    results.each do |row|
-      @count = row["c"]
-      @min = row["mi"].strftime("%F")
-      @max = row["ma"].strftime("%F %T")
-      @days = ((row["ma"] -  row["mi"]) / 64800).floor
-    end
+    row = results.first
+    @count = row["c"]
+    raise "No record found for raspi_id=#{id}" if @count == 0
+    @min = row["mi"].strftime("%F")
+    @max = row["ma"].strftime("%F %T")
+    @days = ((row["ma"] -  row["mi"]) / 64800).floor
     st,en = get_span
     @span = "from "+st+" to "+en
     @id = id
